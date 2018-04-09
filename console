@@ -1,0 +1,29 @@
+#!/usr/bin/env php
+<?php
+
+use DI\NotFoundException;
+
+require __DIR__ . '/vendor/autoload.php';
+
+list($doggy, $action) = explode(":", $argv[1]);
+
+try {
+
+    $container = require __DIR__ . '/src/bootstrap.php';
+
+    $message = call_user_func([
+        $container->get(camelize($doggy)),
+        $action
+    ]);
+
+    fwrite(STDOUT, $message . PHP_EOL);
+
+} catch (NotFoundException $exception) {
+    fwrite(STDERR, "Error: doggy do not exists!" . PHP_EOL);
+    exit(1);
+} catch (Exception $exception) {
+    fwrite(STDERR, "Error: " . $exception->getMessage() . PHP_EOL);
+    exit(1);
+}
+
+
